@@ -1,9 +1,10 @@
 '''
-CUDA_VISIBLE_DEVICES=0 python3 test_adapt.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0
+CUDA_VISIBLE_DEVICES=0 python3 test_adapt_imagenetc5k.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0  --resume /home/yxue/memo/imagenet-exps/results/imagenet_rn50
 '''
 from __future__ import print_function
 
 import argparse
+import copy
 
 import numpy as np
 import torch
@@ -39,9 +40,10 @@ parser.add_argument('--weight_decay', default=0.0, type=float)
 parser.add_argument('--niter', default=1, type=int)
 args = parser.parse_args()
 
-# net = build_model(args)
 base_model = load_model('Standard_R50', './ckpt', 'imagenet', ThreatModel.corruptions).cuda()
 base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'gaussian_noise\']_[5].pt')['model'])
+base_model = base_model.model
+origin_model = copy.deepcopy(base_model)
 
 
 def marginal_entropy(outputs):
@@ -60,9 +62,12 @@ elif args.optimizer == 'adamw':
 for corrupt in ['shot_noise', 'impulse_noise', 'defocus_blur', 'motion_blur', 'zoom_blur', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate']:
     teset = load_imagenetc(5000, args.level, args.dataroot, False, [corrupt])
     correct = []
-    for image, label, _ in teset:
+    for idx, (image, label, _) in enumerate(teset):  # image只读入，没有aug
+        base_model = copy.deepcopy(origin_model)
         adapt_single(base_model, image, optimizer, marginal_entropy,
-                    args.corruption, args.niter, args.batch_size, args.prior_strength)
-        correct.append(test_single(base_model, image, label, args.corruption, args.prior_strength)[0])
+                    corrupt, args.niter, args.batch_size, args.prior_strength)
+        correct.append(test_single(base_model, image, label, corrupt, args.prior_strength)[0])
+        if idx % 100 == 0:
+            print(np.mean(correct))
     print(f'MEMO adapt test error {(1-np.mean(correct))*100:.2f}')
     

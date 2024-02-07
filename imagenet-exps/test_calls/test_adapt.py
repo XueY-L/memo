@@ -1,3 +1,6 @@
+'''
+CUDA_VISIBLE_DEVICES=0 python3 test_adapt.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0  --corruption gaussian_noise --resume /home/yxue/memo/imagenet-exps/results/imagenet_rn50
+'''
 from __future__ import print_function
 
 import argparse
@@ -56,5 +59,6 @@ for i in tqdm(range(len(teset))):
     adapt_single(net, image, optimizer, marginal_entropy,
                  args.corruption, args.niter, args.batch_size, args.prior_strength)
     correct.append(test_single(net, image, label, args.corruption, args.prior_strength)[0])
-
+    if i % 100 == 0:
+        print(np.mean(correct))
 print(f'MEMO adapt test error {(1-np.mean(correct))*100:.2f}')
