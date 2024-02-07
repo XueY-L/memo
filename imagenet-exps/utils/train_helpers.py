@@ -61,7 +61,7 @@ def prepare_test_data(args, use_transforms=True):
     if args.corruption in common_corruptions:
         te_transforms_local = te_transforms_inc if use_transforms else None	
         print(f'Test on {args.corruption} level {args.level}')
-        validdir = os.path.join(args.dataroot, 'imagenet-c', args.corruption, str(args.level))
+        validdir = os.path.join(args.dataroot, 'ImageNet-C', args.corruption, str(args.level))
         teset = datasets.ImageFolder(validdir, te_transforms_local)
     elif args.corruption == 'rendition':
         te_transforms_local = te_transforms if use_transforms else None	

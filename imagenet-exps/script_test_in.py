@@ -1,3 +1,7 @@
+'''
+CUDA_VISIBLE_DEVICES=0 python3 script_test_in.py --experiment imagenetc
+'''
+
 import argparse
 
 from subprocess import call
@@ -10,14 +14,15 @@ args = parser.parse_args()
 experiment = args.experiment
 resume = args.resume
 
-dataroot = '/path/to/imagenet/datasets/'  # EDIT THIS
+dataroot = '/home/yxue/datasets'  # EDIT THIS
 
 if experiment == 'imagenetc':
     corruptions = ['gaussian_noise', 'shot_noise', 'impulse_noise',
                    'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur',
                    'snow', 'frost', 'fog', 'brightness',
                    'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']
-    levels = [1, 2, 3, 4, 5]
+    # levels = [1, 2, 3, 4, 5]
+    levels = [5]
 elif experiment == 'imagenetr':
     corruptions = ['rendition']
     levels = [0]

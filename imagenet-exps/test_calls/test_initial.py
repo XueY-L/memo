@@ -5,6 +5,8 @@ import torch
 import torch.backends.cudnn as cudnn
 cudnn.benchmark = True
 
+import sys
+sys.path.append('/home/yxue/memo/imagenet-exps')
 from utils.test_helpers import test
 from utils.train_helpers import build_model, prepare_test_data
 
