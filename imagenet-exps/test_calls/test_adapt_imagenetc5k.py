@@ -1,5 +1,5 @@
 '''
-CUDA_VISIBLE_DEVICES=0 python3 test_adapt_imagenetc5k.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0  --resume /home/yxue/memo/imagenet-exps/results/imagenet_rn50
+CUDA_VISIBLE_DEVICES=2 python3 test_adapt_imagenetc5k.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0 
 '''
 from __future__ import print_function
 
@@ -41,7 +41,7 @@ parser.add_argument('--niter', default=1, type=int)
 args = parser.parse_args()
 
 base_model = load_model('Standard_R50', './ckpt', 'imagenet', ThreatModel.corruptions).cuda()
-base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'gaussian_noise\']_[5].pt')['model'])
+base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'glass_blur\']_[1].pt')['model'])
 base_model = base_model.model
 origin_model = copy.deepcopy(base_model)
 
@@ -59,7 +59,7 @@ elif args.optimizer == 'adamw':
     optimizer = optim.AdamW(base_model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
 
-for corrupt in ['shot_noise', 'impulse_noise', 'defocus_blur', 'motion_blur', 'zoom_blur', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate']:
+for corrupt in ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur', 'glass_blur', 'motion_blur', 'zoom_blur', 'snow', 'frost', 'fog', 'brightness', 'contrast', 'elastic_transform', 'pixelate', 'jpeg_compression']:
     teset = load_imagenetc(5000, args.level, args.dataroot, False, [corrupt])
     correct = []
     for idx, (image, label, _) in enumerate(teset):  # image只读入，没有aug
@@ -70,4 +70,5 @@ for corrupt in ['shot_noise', 'impulse_noise', 'defocus_blur', 'motion_blur', 'z
         if idx % 100 == 0:
             print(np.mean(correct))
     print(f'MEMO adapt test error {(1-np.mean(correct))*100:.2f}')
+    print(f'MEMO adapt test acc {np.mean(correct):.4f}')
     
