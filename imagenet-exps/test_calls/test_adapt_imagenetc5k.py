@@ -41,7 +41,7 @@ parser.add_argument('--niter', default=1, type=int)
 args = parser.parse_args()
 
 base_model = load_model('Standard_R50', './ckpt', 'imagenet', ThreatModel.corruptions).cuda()
-base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'glass_blur\']_[1].pt')['model'])
+base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'snow\']_[1].pt')['model'])
 base_model = base_model.model
 origin_model = copy.deepcopy(base_model)
 
@@ -69,6 +69,6 @@ for corrupt in ['gaussian_noise', 'shot_noise', 'impulse_noise', 'defocus_blur',
         correct.append(test_single(base_model, image, label, corrupt, args.prior_strength)[0])
         if idx % 100 == 0:
             print(np.mean(correct))
-    print(f'MEMO adapt test error {(1-np.mean(correct))*100:.2f}')
-    print(f'MEMO adapt test acc {np.mean(correct):.4f}')
+    print(f'{corrupt} MEMO adapt test error {(1-np.mean(correct))*100:.2f}')
+    print(f'{corrupt} MEMO adapt test acc {np.mean(correct):.4f}')
     

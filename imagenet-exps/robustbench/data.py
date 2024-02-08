@@ -166,7 +166,7 @@ def load_imagenetc(
     #  at once -- perhaps this is a cleaner solution)
 
     class TempSet(Dataset):
-        def __init__(self, data_paths, data_labels, transforms):
+        def __init__(self, data_paths, data_labels, transforms=None):
             super(TempSet, self).__init__()
             self.data_paths = data_paths
             self.data_labels = data_labels
@@ -177,7 +177,8 @@ def load_imagenetc(
             if not img.mode == "RGB":
                 img = img.convert("RGB")
             label = self.data_labels[index]
-            # img = self.transforms(img)
+            if self.transforms != None:
+                img = self.transforms(img)
 
             return img, label, self.data_paths[index]  # 为了和cifar100c的代码对齐，他是data,label,path
 
@@ -195,7 +196,7 @@ def load_imagenetc(
             labels.append(target)
     # print(len(data_path), len(labels))
     
-    dataset = TempSet(data_path, labels, data_transform)
+    dataset = TempSet(data_path, labels, transforms=None)
 
     return dataset
 
