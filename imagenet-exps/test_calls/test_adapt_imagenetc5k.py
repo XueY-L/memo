@@ -1,5 +1,5 @@
 '''
-CUDA_VISIBLE_DEVICES=2 python3 test_adapt_imagenetc5k.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0 
+CUDA_VISIBLE_DEVICES=0 python3 test_adapt_imagenetc5k.py --dataroot /home/yxue/datasets --level 5  --resume None --optimizer sgd --lr 0.00025 --weight_decay 0.0 
 '''
 from __future__ import print_function
 
@@ -41,7 +41,7 @@ parser.add_argument('--niter', default=1, type=int)
 args = parser.parse_args()
 
 base_model = load_model('Standard_R50', './ckpt', 'imagenet', ThreatModel.corruptions).cuda()
-base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'snow\']_[1].pt')['model'])
+base_model.load_state_dict(torch.load('/home/yxue/model_fusion_tta/imagenet/checkpoint/ckpt_[\'jpeg_compression\']_[1].pt')['model'])
 base_model = base_model.model
 origin_model = copy.deepcopy(base_model)
 
